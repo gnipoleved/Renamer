@@ -1,6 +1,5 @@
 ﻿using Renamer.Model;
 using Renamer.View;
-using System;
 
 namespace Renamer.Presenter
 {

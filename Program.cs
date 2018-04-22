@@ -2,10 +2,6 @@
 using Renamer.Presenter;
 using Renamer.View;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Renamer
 {
@@ -17,10 +13,6 @@ namespace Renamer
         [STAThread]
         static void Main()
         {
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new Form1());
-
             IView view = new RenamerForm();
             IModel model = new RenamerModel();
             IPresenter presenter = new RenamerPresenter(view, model);
