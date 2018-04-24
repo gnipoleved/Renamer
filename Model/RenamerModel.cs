@@ -1,12 +1,14 @@
 ﻿
+using System;
 using System.IO;
 namespace Renamer.Model
 {
     public interface IModel
     {
-        string SelectedDirectory { get; set; }
+        string Directory { get; set; }
 
         void Init();
+        void SelectDirectory(string directory);
     }
 
 
@@ -14,7 +16,7 @@ namespace Renamer.Model
     {
         private Properties props;
 
-        public /*override*/ string SelectedDirectory { get; set; }
+        public /*override*/ string Directory { get; set; }
 
         public RenamerModel()
         {
@@ -26,12 +28,19 @@ namespace Renamer.Model
             string readDir = props.get("last_dir");
             if (string.IsNullOrEmpty(readDir) || File.Exists(readDir) == false)
             {
-                SelectedDirectory = @"C:\";
+                Directory = @"C:\";
             }
             else
             {
-                SelectedDirectory = readDir;
+                Directory = readDir;
             }
+        }
+
+        void IModel.SelectDirectory(string directory)
+        {
+            DirectoryInfo dir = new DirectoryInfo(directory);
+            if (dir.Exists) this.Directory = directory;
+            else throw new InvalidOperationException("Directory [" + directory + "] Not found.");
         }
 
     }

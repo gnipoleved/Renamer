@@ -7,7 +7,11 @@ namespace Renamer.View
 
     public interface IView
     {
+        string ErrorMsg { set; }
+        string Directory { set; }
+
         void Build();
         event ViewEventHandler OnBuilt;
+        event ViewEventHandler<string> OnDirectorySelected;
     }
 }

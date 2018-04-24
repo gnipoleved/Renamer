@@ -1,5 +1,6 @@
 ﻿using Renamer.Model;
 using Renamer.View;
+using System;
 
 namespace Renamer.Presenter
 {
@@ -7,6 +8,7 @@ namespace Renamer.Presenter
     {
         void LoadView();
         void OnViewLoaded();
+        void OnViewDirectorySelected(string directory);
     }
 
 
@@ -32,13 +34,33 @@ namespace Renamer.Presenter
         private void Bind()
         {
             view.OnBuilt += new ViewEventHandler(OnViewLoaded);
-
+            view.OnDirectorySelected += OnViewDirectorySelected;
         }
 
 
         public /*override*/ void OnViewLoaded()
         {
             model.Init();
+            view.Directory = model.Directory;
         }
+
+        public /*override*/ void OnViewDirectorySelected(string directory)
+        {
+            try
+            {
+                model.SelectDirectory(directory);
+            }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+            finally
+            {
+                // Exception이 발생한 경우에도 기존 dir 유지
+                view.Directory = model.Directory;
+            }
+        }
+
+        
     }
 }
