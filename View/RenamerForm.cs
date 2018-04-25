@@ -16,8 +16,8 @@ namespace Renamer.View
             InitializeComponent();
         }
 
-
-        string IView.ErrorMsg
+        
+        public /*override*/ string ErrorMsg
         {
             set
             {
@@ -25,7 +25,7 @@ namespace Renamer.View
             }
         }
 
-        string IView.Directory
+        public /*override*/ string Directory
         {
             set 
             {
@@ -43,10 +43,22 @@ namespace Renamer.View
 
         private void RenamerForm_Load(object sender, System.EventArgs e)
         {
+            InitializeFileListView();
             if (OnBuilt != null) OnBuilt();
         }
 
         public /*override*/ event ViewEventHandler<string> OnDirectorySelected;
+
+        public /*override*/ event ViewEventHandler<string> OnQueryFileListRequest;
+
+
+        private void InitializeFileListView()
+        {
+            lv_file_list.View = System.Windows.Forms.View.Details;
+            lv_file_list.Columns.Add("No", 30, HorizontalAlignment.Center);
+            lv_file_list.Columns.Add("파일명", 470, HorizontalAlignment.Center);
+            lv_file_list.Columns.Add("상태", 100, HorizontalAlignment.Center);
+        }
 
         private void btn_choose_Click(object sender, System.EventArgs e)
         {
@@ -62,6 +74,19 @@ namespace Renamer.View
             if (e.KeyChar == 13)
             {
                 if (OnDirectorySelected != null) OnDirectorySelected(tbx_directory.Text.Trim());
+            }
+        }
+
+        private void btn_search_Click(object sender, System.EventArgs e)
+        {
+            string where = tbx_where.Text.Trim();
+            if (string.IsNullOrEmpty(where))
+            {
+                ErrorMsg = "검색 조건을 입력하시용";
+            }
+            else
+            {
+                if (OnQueryFileListRequest != null) OnQueryFileListRequest(where);
             }
         }
 

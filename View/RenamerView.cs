@@ -13,5 +13,6 @@ namespace Renamer.View
         void Build();
         event ViewEventHandler OnBuilt;
         event ViewEventHandler<string> OnDirectorySelected;
+        event ViewEventHandler<string> OnQueryFileListRequest;
     }
 }

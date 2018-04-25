@@ -9,6 +9,7 @@ namespace Renamer.Presenter
         void LoadView();
         void OnViewLoaded();
         void OnViewDirectorySelected(string directory);
+        void OnViewFileListQueried(string where);
     }
 
 
@@ -35,6 +36,7 @@ namespace Renamer.Presenter
         {
             view.OnBuilt += new ViewEventHandler(OnViewLoaded);
             view.OnDirectorySelected += OnViewDirectorySelected;
+            view.OnQueryFileListRequest += OnViewFileListQueried;
         }
 
 
@@ -61,6 +63,17 @@ namespace Renamer.Presenter
             }
         }
 
-        
+        public /*override*/ void OnViewFileListQueried(string where)
+        {
+            try
+            {
+                model.QueryFileList(where);
+            }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+        }
+
     }
 }

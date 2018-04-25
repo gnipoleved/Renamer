@@ -1,6 +1,7 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+
 namespace Renamer.Model
 {
     public interface IModel
@@ -9,6 +10,7 @@ namespace Renamer.Model
 
         void Init();
         void SelectDirectory(string directory);
+        void QueryFileList(string where);
     }
 
 
@@ -43,5 +45,11 @@ namespace Renamer.Model
             else throw new InvalidOperationException("Directory [" + directory + "] Not found.");
         }
 
+        public /*override*/ void QueryFileList(string where)
+        {
+            //Queue<Directory> q = new Queue<Directory>();
+            //q.Enqueue
+
+        }
     }
 }
