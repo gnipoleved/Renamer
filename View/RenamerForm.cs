@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using Renamer.Model;
+using System.Windows.Forms;
 
 namespace Renamer.View
 {
@@ -30,6 +31,7 @@ namespace Renamer.View
             set 
             {
                 tbx_directory.Text = value;
+                lv_file_list.Items.Clear();
             }
         }
 
@@ -51,12 +53,20 @@ namespace Renamer.View
 
         public /*override*/ event ViewEventHandler<string> OnQueryFileListRequest;
 
+        public /*override*/ void AddFileVo(FileVo vo)
+        {
+            ListViewItem lvi = new ListViewItem(vo.Index.ToString());
+            lvi.SubItems.Add(vo.PathOriginal);
+            lvi.SubItems.Add(vo.Status);
+            lv_file_list.Items.Add(lvi);
+        }
+
 
         private void InitializeFileListView()
         {
             lv_file_list.View = System.Windows.Forms.View.Details;
-            lv_file_list.Columns.Add("No", 30, HorizontalAlignment.Center);
-            lv_file_list.Columns.Add("파일명", 470, HorizontalAlignment.Center);
+            lv_file_list.Columns.Add("No", 30, HorizontalAlignment.Right);
+            lv_file_list.Columns.Add("파일명", 470, HorizontalAlignment.Left);
             lv_file_list.Columns.Add("상태", 100, HorizontalAlignment.Center);
         }
 

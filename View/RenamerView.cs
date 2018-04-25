@@ -1,4 +1,5 @@
 ﻿
+using Renamer.Model;
 namespace Renamer.View
 {
     public delegate void ViewEventHandler();
@@ -14,5 +15,7 @@ namespace Renamer.View
         event ViewEventHandler OnBuilt;
         event ViewEventHandler<string> OnDirectorySelected;
         event ViewEventHandler<string> OnQueryFileListRequest;
+
+        void AddFileVo(FileVo vo);
     }
 }

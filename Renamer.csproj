@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Model\Properties.cs" />
     <Compile Include="Model\RenamerModel.cs" />
+    <Compile Include="Model\Vo.cs" />
     <Compile Include="Presenter\RenamerPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

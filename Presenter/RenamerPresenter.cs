@@ -4,6 +4,8 @@ using System;
 
 namespace Renamer.Presenter
 {
+    public delegate void ListAdder(FileVo fileVo);
+
     public interface IPresenter
     {
         void LoadView();
@@ -43,7 +45,7 @@ namespace Renamer.Presenter
         public /*override*/ void OnViewLoaded()
         {
             model.Init();
-            view.Directory = model.Directory;
+            view.Directory = model.Directory.FullName;
         }
 
         public /*override*/ void OnViewDirectorySelected(string directory)
@@ -59,7 +61,7 @@ namespace Renamer.Presenter
             finally
             {
                 // Exception이 발생한 경우에도 기존 dir 유지
-                view.Directory = model.Directory;
+                view.Directory = model.Directory.FullName;
             }
         }
 
@@ -67,13 +69,20 @@ namespace Renamer.Presenter
         {
             try
             {
-                model.QueryFileList(where);
+                model.QueryFileList(where, new ListAdder(AddFileVoToView));
             }
             catch (Exception ex)
             {
                 view.ErrorMsg = ex.ToString();
             }
         }
+
+
+        private void AddFileVoToView(FileVo vo)
+        {
+            view.AddFileVo(vo);
+        }
+
 
     }
 }

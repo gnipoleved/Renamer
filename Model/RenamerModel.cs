@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Renamer.Presenter;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -6,11 +7,11 @@ namespace Renamer.Model
 {
     public interface IModel
     {
-        string Directory { get; set; }
+        DirectoryInfo Directory { get; set; }
 
         void Init();
         void SelectDirectory(string directory);
-        void QueryFileList(string where);
+        void QueryFileList(string where, ListAdder adder);
     }
 
 
@@ -18,7 +19,7 @@ namespace Renamer.Model
     {
         private Properties props;
 
-        public /*override*/ string Directory { get; set; }
+        public /*override*/ DirectoryInfo Directory { get; set; }
 
         public RenamerModel()
         {
@@ -30,26 +31,43 @@ namespace Renamer.Model
             string readDir = props.get("last_dir");
             if (string.IsNullOrEmpty(readDir) || File.Exists(readDir) == false)
             {
-                Directory = @"C:\";
+                Directory = new DirectoryInfo(@"C:\");
             }
             else
             {
-                Directory = readDir;
+                Directory = new DirectoryInfo(readDir);
             }
         }
 
         void IModel.SelectDirectory(string directory)
         {
             DirectoryInfo dir = new DirectoryInfo(directory);
-            if (dir.Exists) this.Directory = directory;
+            if (dir.Exists) this.Directory = dir;
             else throw new InvalidOperationException("Directory [" + directory + "] Not found.");
         }
 
-        public /*override*/ void QueryFileList(string where)
+        public /*override*/ void QueryFileList(string where, ListAdder adder)
         {
-            //Queue<Directory> q = new Queue<Directory>();
-            //q.Enqueue
+            List<FileVo> list = new List<FileVo>();
 
+            Queue<DirectoryInfo> q = new Queue<DirectoryInfo>();
+            q.Enqueue(Directory);
+
+            while (q.Count > 0)
+            {
+                DirectoryInfo poll = q.Dequeue();
+                if (poll.Exists)
+                {
+                    foreach (FileInfo fi in poll.GetFiles())
+                    {
+                        if (fi.Name.ToUpper().IndexOf(where.ToUpper()) >= 0)
+                        {
+                            list.Add(new FileVo(list.Count + 1, fi, "대기"));
+                            adder(list[list.Count - 1]);
+                        }
+                    }
+                }
+            }
         }
     }
 }
