@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace Renamer.Model
 {
+    public static class Status
+    {
+        public static readonly string STANDBY = "대기";
+        public static readonly string ON_CONV = "변환중...";
+        public static readonly string CONV_COMPLETE = "[완료]";
+        public static readonly string ON_REVERT = "원복중...";
+        public static readonly string REVERT_COMPLETE = "<원복완료>";
+        public static readonly string NOT_ABLE_TO_REVERT = "#원복불가#";
+    }
+    
+
+
     public class FileVo
     {
         //private FileInfo fi;
@@ -26,6 +33,12 @@ namespace Renamer.Model
             this.Index = index;
             this.PathOriginal = fi.FullName;
             this.Status = status;
+        }
+
+
+        public void SetPathMoved(string where, string to)
+        {
+            PathMoved = PathOriginal.Replace(where, to);
         }
         
     }
