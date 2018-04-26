@@ -170,15 +170,9 @@ namespace Renamer.View
 
         private void RequestConvert()
         {
-            string to = tbx_to.Text.Trim();
-            if (string.IsNullOrEmpty(to))
-            {
-                ErrorMsg = "바꿀 문자열이 비어있네요";
-            }
-            else
-            {
-                if (OnConvertRequest != null) OnConvertRequest(to);
-            }
+            string to = tbx_to.Text;
+            if (string.IsNullOrEmpty(to)) to = string.Empty;
+            if (OnConvertRequest != null) OnConvertRequest(to);
         }
 
         private void RequestUndo()
