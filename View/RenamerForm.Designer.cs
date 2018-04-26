@@ -131,9 +131,9 @@
             this.lbl_num_files.AutoSize = true;
             this.lbl_num_files.Location = new System.Drawing.Point(209, 106);
             this.lbl_num_files.Name = "lbl_num_files";
-            this.lbl_num_files.Size = new System.Drawing.Size(11, 12);
+            this.lbl_num_files.Size = new System.Drawing.Size(47, 12);
             this.lbl_num_files.TabIndex = 0;
-            this.lbl_num_files.Text = "0";
+            this.lbl_num_files.Text = "1000000";
             // 
             // btn_search
             // 
@@ -168,7 +168,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(223, 106);
+            this.label3.Location = new System.Drawing.Point(260, 106);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(17, 12);
             this.label3.TabIndex = 7;
