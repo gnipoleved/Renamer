@@ -23,6 +23,9 @@ namespace Renamer.View
         void ClearListView();
         void AddFileVo(FileVo vo);
         void ChangeFileVoStatus(FileVo fileVo);
+        void OnSearchListDone(int numFilesSearched);
+        void OnConvertDone(ActionResult convertResult);
+        void OnUndoFinished(ActionResult undoResult);
 
         System.Windows.Forms.DialogResult AskConvertSure(string modelWhere, string viewTo);
         System.Windows.Forms.DialogResult AskUndoSure(string modelWhere, string modelTo);

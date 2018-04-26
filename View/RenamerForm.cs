@@ -72,6 +72,7 @@ namespace Renamer.View
         public /*override*/ void ClearListView()
         {
             lv_file_list.Items.Clear();
+            lbl_num_files.Text = "0";
         }
 
         public /*override*/ void AddFileVo(FileVo vo)
@@ -99,6 +100,22 @@ namespace Renamer.View
             return MessageBox.Show(string.Format("정말로 실행취소를 원하십니까?\r\n문자열 [{0}] (이)가 [{1}] (으)로 변환됩니다.", modelTo, modelWhere), "Confirm", MessageBoxButtons.YesNo);
         }
 
+        public /*override*/ void OnSearchListDone(int numFilesSearched)
+        {
+            lbl_num_files.Text = numFilesSearched.ToString();
+        }
+
+        public /*override*/ void OnConvertDone(ActionResult convertResult)
+        {
+            this.ConfirmMsg = string.Format("변환 결과 : ({0} / {1})", convertResult.CountSuccess, convertResult.CountTotal);
+        }
+
+        public /*override*/ void OnUndoFinished(ActionResult undoResult)
+        {
+            this.ConfirmMsg = string.Format("원복 결과 : ({0} / {1})", undoResult.CountSuccess, undoResult.CountTotal);
+        }
+
+
         private void InitializeFileListView()
         {
             lv_file_list.View = System.Windows.Forms.View.Details;
@@ -112,15 +129,15 @@ namespace Renamer.View
             DialogResult dialogResult = folderBrowserDialog.ShowDialog();
             if (dialogResult == DialogResult.OK && string.IsNullOrEmpty(folderBrowserDialog.SelectedPath) == false)
             {
-                if (OnDirectorySelected != null) OnDirectorySelected(folderBrowserDialog.SelectedPath);
+                SelectDirectory(folderBrowserDialog.SelectedPath);
             }
-        }
+        }        
 
         private void tbx_directory_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)
             {
-                if (OnDirectorySelected != null) OnDirectorySelected(tbx_directory.Text.Trim());
+                SelectDirectory(tbx_directory.Text.Trim());
             }
         }
 
@@ -155,6 +172,16 @@ namespace Renamer.View
             }
         }
 
+
+        private void SelectDirectory(string dirPath)
+        {
+            if (OnDirectorySelected != null)
+            {
+                ClearListView();
+                OnDirectorySelected(dirPath);
+            }
+        }
+
         private void RequestSearching()
         {
             string where = tbx_where.Text;
@@ -164,6 +191,7 @@ namespace Renamer.View
             }
             else
             {
+                ClearListView();
                 if (OnQueryFileListRequest != null) OnQueryFileListRequest(where);
             }
         }

@@ -59,7 +59,7 @@ namespace Renamer.Presenter
         {
             try
             {
-                view.ClearListView();
+                //view.ClearListView();
                 model.SelectDirectory(directory);
             }
             catch (Exception ex)
@@ -77,8 +77,9 @@ namespace Renamer.Presenter
         {
             try
             {
-                view.ClearListView();
+                //view.ClearListView();
                 model.QueryFileList(where, new ListAdder(AddFileVoToView));
+                view.OnSearchListDone(model.QueriedFileList.Count);
             }
             catch (Exception ex)
             {
@@ -93,8 +94,9 @@ namespace Renamer.Presenter
                 DialogResult dRes = view.AskConvertSure(model.Where, to);
                 if (dRes == DialogResult.Yes)
                 {
-                    model.ConvertFiles(to, new StatusListen(ChangeFileVoStatusInView));
-                    view.ConfirmMsg = "변환 작업이 완료되었습니다.";
+                    ActionResult convertResult = model.ConvertFiles(to, new StatusListen(ChangeFileVoStatusInView));
+                    view.OnConvertDone(convertResult);
+                    //view.ConfirmMsg = "변환 작업이 완료되었습니다.";
                 }
             }
             catch (Exception ex)
@@ -112,8 +114,8 @@ namespace Renamer.Presenter
                     DialogResult dRes = view.AskUndoSure(model.Where, model.To);
                     if (dRes == DialogResult.Yes)
                     {
-                        model.Undo(ChangeFileVoStatusInView);
-                        view.ConfirmMsg = "실행 취소 완료. 리스트에서 실패된 게 있으면 실제 파일을 확인해 보세요";
+                        ActionResult undoResult = model.Undo(ChangeFileVoStatusInView);
+                        view.OnUndoFinished(undoResult);
                     }
                 }
                 else

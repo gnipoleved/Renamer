@@ -7,6 +7,7 @@ namespace Renamer.Model
         public static readonly string STANDBY = "대기";
         public static readonly string ON_CONV = "변환중...";
         public static readonly string CONV_COMPLETE = "[완료]";
+        public static readonly string NOT_ABLE_TO_CONV = "@변환실패@";
         public static readonly string ON_REVERT = "원복중...";
         public static readonly string REVERT_COMPLETE = "<원복완료>";
         public static readonly string NOT_ABLE_TO_REVERT = "#원복불가#";

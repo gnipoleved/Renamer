@@ -42,6 +42,7 @@
             this.btn_search = new System.Windows.Forms.Button();
             this.btn_convert = new System.Windows.Forms.Button();
             this.btn_undo = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // tbx_directory
@@ -130,9 +131,9 @@
             this.lbl_num_files.AutoSize = true;
             this.lbl_num_files.Location = new System.Drawing.Point(209, 106);
             this.lbl_num_files.Name = "lbl_num_files";
-            this.lbl_num_files.Size = new System.Drawing.Size(27, 12);
+            this.lbl_num_files.Size = new System.Drawing.Size(11, 12);
             this.lbl_num_files.TabIndex = 0;
-            this.lbl_num_files.Text = "0 개";
+            this.lbl_num_files.Text = "0";
             // 
             // btn_search
             // 
@@ -164,11 +165,21 @@
             this.btn_undo.UseVisualStyleBackColor = true;
             this.btn_undo.Click += new System.EventHandler(this.btn_undo_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(223, 106);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(17, 12);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "개";
+            // 
             // RenamerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(630, 477);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btn_undo);
             this.Controls.Add(this.btn_convert);
             this.Controls.Add(this.btn_search);
@@ -206,5 +217,6 @@
         private System.Windows.Forms.Button btn_search;
         private System.Windows.Forms.Button btn_convert;
         private System.Windows.Forms.Button btn_undo;
+        private System.Windows.Forms.Label label3;
     }
 }

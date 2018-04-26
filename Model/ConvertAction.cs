@@ -16,4 +16,19 @@ namespace Renamer.Model
         }
 
     }
+
+
+    public class ActionResult
+    {
+        public int CountTotal { get; set; }
+        public int CountSuccess { get; set; }
+        public int CountFail { get; set; }
+
+        public ActionResult()
+        {
+            this.CountTotal = 0;
+            this.CountSuccess = 0;
+            this.CountFail = 0;
+        }
+    }
 }
