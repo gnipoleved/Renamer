@@ -102,8 +102,8 @@ namespace Renamer.View
         private void InitializeFileListView()
         {
             lv_file_list.View = System.Windows.Forms.View.Details;
-            lv_file_list.Columns.Add("No", 30, HorizontalAlignment.Right);
-            lv_file_list.Columns.Add("파일명", 470, HorizontalAlignment.Left);
+            lv_file_list.Columns.Add("No", 50, HorizontalAlignment.Right);
+            lv_file_list.Columns.Add("파일명", 450, HorizontalAlignment.Left);
             lv_file_list.Columns.Add("상태", 100, HorizontalAlignment.Center);
         }
 
