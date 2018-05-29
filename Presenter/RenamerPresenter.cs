@@ -1,12 +1,22 @@
 ﻿using Renamer.Model;
 using Renamer.View;
+using System;
+using System.Windows.Forms;
 
 namespace Renamer.Presenter
 {
+    public delegate void ListAdder(FileVo fileVo);
+
+    public delegate void StatusListen(FileVo fileVo);
+
+
     public interface IPresenter
     {
         void LoadView();
         void OnViewLoaded();
+        void OnViewDirectorySelected(string directory);
+        void OnViewFileListQueried(string where);
+        void OnViewUndoRequest();
     }
 
 
@@ -32,13 +42,104 @@ namespace Renamer.Presenter
         private void Bind()
         {
             view.OnBuilt += new ViewEventHandler(OnViewLoaded);
-
+            view.OnDirectorySelected += OnViewDirectorySelected;
+            view.OnQueryFileListRequest += OnViewFileListQueried;
+            view.OnConvertRequest += new ViewEventHandler<string>(OnViewConvertRequest);
+            view.OnUndoRequest += OnViewUndoRequest;
         }
 
 
         public /*override*/ void OnViewLoaded()
         {
             model.Init();
+            view.Directory = model.Directory.FullName;
         }
+
+        public /*override*/ void OnViewDirectorySelected(string directory)
+        {
+            try
+            {
+                //view.ClearListView();
+                model.SelectDirectory(directory);
+            }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+            finally
+            {
+                // Exception이 발생한 경우에도 기존 dir 유지
+                view.Directory = model.Directory.FullName;
+            }
+        }
+
+        public /*override*/ void OnViewFileListQueried(string where)
+        {
+            try
+            {
+                //view.ClearListView();
+                model.QueryFileList(where, new ListAdder(AddFileVoToView));
+                view.OnSearchListDone(model.QueriedFileList.Count);
+            }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+        }
+
+        public /*override*/ void OnViewConvertRequest(string to)
+        {
+            try
+            {
+                DialogResult dRes = view.AskConvertSure(model.Where, to);
+                if (dRes == DialogResult.Yes)
+                {
+                    ActionResult convertResult = model.ConvertFiles(to, new StatusListen(ChangeFileVoStatusInView));
+                    view.OnConvertDone(convertResult);
+                    //view.ConfirmMsg = "변환 작업이 완료되었습니다.";
+                }
+            }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+        }
+
+        public /*override*/ void OnViewUndoRequest()
+        {
+            try
+            {
+                if (model.AbleToUndo())
+                {
+                    DialogResult dRes = view.AskUndoSure(model.Where, model.To);
+                    if (dRes == DialogResult.Yes)
+                    {
+                        ActionResult undoResult = model.Undo(ChangeFileVoStatusInView);
+                        view.OnUndoFinished(undoResult);
+                    }
+                }
+                else
+                {
+                    view.ErrorMsg = "더 이상 실행 취소를 할 수 없습니다.";
+                }
+            }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+        }
+
+        
+        private void AddFileVoToView(FileVo vo)
+        {
+            view.AddFileVo(vo);
+        }
+
+        private void ChangeFileVoStatusInView(FileVo fileVo)
+        {
+            view.ChangeFileVoStatus(fileVo);
+        }
+
+
     }
 }
