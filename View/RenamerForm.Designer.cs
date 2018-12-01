@@ -217,6 +217,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_choose);
             this.Controls.Add(this.tbx_directory);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "RenamerForm";
             this.Text = "Renamer, 파일이름 변환기, by mirsolution";
             this.Load += new System.EventHandler(this.RenamerForm_Load);

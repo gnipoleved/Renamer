@@ -5,9 +5,9 @@ using System.Windows.Forms;
 
 namespace Renamer.Presenter
 {
-    public delegate void ListAdder(FileVo fileVo);
+    public delegate void ListAdder(BaseVo vo);
 
-    public delegate void StatusListen(FileVo fileVo);
+    public delegate void StatusListen(BaseVo vo);
 
 
     public interface IPresenter
@@ -80,7 +80,7 @@ namespace Renamer.Presenter
             try
             {
                 //view.ClearListView();
-                model.QueryFileList(where, new ListAdder(AddFileVoToView));
+                model.QueryFileList(where, new ListAdder(AddVoToView));
                 view.OnSearchListDone(model.QueriedFileList.Count);
             }
             catch (Exception ex)
@@ -93,12 +93,22 @@ namespace Renamer.Presenter
         {
             try
             {
-                DialogResult dRes = view.AskConvertSure(model.Where, to);
-                if (dRes == DialogResult.Yes)
+                if (model.AbleToConvert())
                 {
-                    ActionResult convertResult = model.ConvertFiles(to, new StatusListen(ChangeFileVoStatusInView));
-                    view.OnConvertDone(convertResult);
-                    //view.ConfirmMsg = "변환 작업이 완료되었습니다.";
+                    DialogResult dRes = view.AskConvertSure(model.Where, to);
+                    if (dRes == DialogResult.Yes)
+                    {
+                        if (!string.IsNullOrEmpty(to) || view.AskEmptyConvertSure() == DialogResult.Yes)
+                        {
+                            ActionResult convertResult = model.ConvertFiles(to, new StatusListen(ChangeVoStatusInView));
+                            view.OnConvertDone(convertResult);
+                            //view.ConfirmMsg = "변환 작업이 완료되었습니다.";
+                        }
+                    }
+                }
+                else
+                {
+                    view.ErrorMsg = "Convert 할 수 없는 상태입니다. 파일 찾기 부터 다시 해 주세요.";
                 }
             }
             catch (Exception ex)
@@ -116,7 +126,7 @@ namespace Renamer.Presenter
                     DialogResult dRes = view.AskUndoSure(model.Where, model.To);
                     if (dRes == DialogResult.Yes)
                     {
-                        ActionResult undoResult = model.Undo(ChangeFileVoStatusInView);
+                        ActionResult undoResult = model.Undo(ChangeVoStatusInView);
                         view.OnUndoFinished(undoResult);
                     }
                 }
@@ -144,14 +154,14 @@ namespace Renamer.Presenter
         }
 
         
-        private void AddFileVoToView(FileVo vo)
+        private void AddVoToView(BaseVo vo)
         {
-            view.AddFileVo(vo);
+            view.AddVo(vo);
         }
 
-        private void ChangeFileVoStatusInView(FileVo fileVo)
+        private void ChangeVoStatusInView(BaseVo vo)
         {
-            view.ChangeFileVoStatus(fileVo);
+            view.ChangeVoStatus(vo);
         }
 
 

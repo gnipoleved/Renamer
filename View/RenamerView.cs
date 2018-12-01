@@ -1,4 +1,5 @@
 ﻿using Renamer.Model;
+using System.Windows.Forms;
 
 namespace Renamer.View
 {
@@ -22,13 +23,14 @@ namespace Renamer.View
         event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
 
         void ClearListView();
-        void AddFileVo(FileVo vo);
-        void ChangeFileVoStatus(FileVo fileVo);
+        void AddVo(BaseVo vo);
+        void ChangeVoStatus(BaseVo vo);
         void OnSearchListDone(int numFilesSearched);
         void OnConvertDone(ActionResult convertResult);
         void OnUndoFinished(ActionResult undoResult);
 
-        System.Windows.Forms.DialogResult AskConvertSure(string modelWhere, string viewTo);
-        System.Windows.Forms.DialogResult AskUndoSure(string modelWhere, string modelTo);
+        DialogResult AskConvertSure(string modelWhere, string viewTo);
+        DialogResult AskEmptyConvertSure();
+        DialogResult AskUndoSure(string modelWhere, string modelTo);
     }
 }

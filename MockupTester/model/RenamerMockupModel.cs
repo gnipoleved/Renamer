@@ -26,7 +26,7 @@ namespace Renamer.MockupTester.model
             set;
         }
 
-        public System.Collections.Generic.List<FileVo> QueriedFileList
+        public System.Collections.Generic.List<BaseVo> QueriedFileList
         {
             get;
             set;
@@ -56,24 +56,41 @@ namespace Renamer.MockupTester.model
 
         public void QueryFileList(string where, Presenter.ListAdder adder)
         {
-            adder(new FileVo(0, new FileInfo("mockuptestfile"), "status"));
+            //adder(new FileVo(0, new FileInfo("mockuptestfile"), "status"));
         }
 
         public ActionResult ConvertFiles(string to, Presenter.StatusListen listen)
         {
-            listen(new FileVo(0, new FileInfo("mockuptestConvertedFile"), "converted"));
+            //listen(new FileVo(0, new FileInfo("mockuptestConvertedFile"), "converted"));
             return new ActionResult();
         }
 
         public ActionResult Undo(Presenter.StatusListen listen)
         {
-            listen(new FileVo(0, new FileInfo("mockuptestUndoneFile"), "converted"));
+            //listen(new FileVo(0, new FileInfo("mockuptestUndoneFile"), "converted"));
             return new ActionResult();
         }
 
         public bool AbleToUndo()
         {
             return false;
+        }
+
+        public string State
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public bool AbleToConvert()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

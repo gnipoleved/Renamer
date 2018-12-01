@@ -14,8 +14,8 @@ namespace Renamer
         static void Main()
         {
             IView view = new RenamerForm();
-            //IModel model = new RenamerModel();
-            IModel model = new Renamer.MockupTester.model.RenamerMockupModel();
+            IModel model = new RenamerModel();
+            //IModel model = new Renamer.MockupTester.model.RenamerMockupModel();
             IPresenter presenter = new RenamerPresenter(view, model);
             presenter.LoadView();
 

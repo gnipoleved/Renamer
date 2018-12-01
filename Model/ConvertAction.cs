@@ -4,15 +4,17 @@ namespace Renamer.Model
 {
     public class ConvertAction
     {
-        public List<FileVo> FileList { get; set; }
+        public List<BaseVo> VoList { get; set; }
+        public bool IncludeFloderOption { get; set; }
         public string Where { get; set; }
         public string To { get; set; }
 
-        public ConvertAction(List<FileVo> FileList, string Where, string To)
+        public ConvertAction(List<BaseVo> voList, bool includeFolderOption, string where, string to)
         {
-            this.FileList = FileList;
-            this.Where = Where;
-            this.To = To;
+            this.VoList = voList;
+            this.IncludeFloderOption = IncludeFloderOption;
+            this.Where = where;
+            this.To = to;
         }
 
     }
