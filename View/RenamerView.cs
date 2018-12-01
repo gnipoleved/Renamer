@@ -19,6 +19,7 @@ namespace Renamer.View
         event ViewEventHandler<string> OnQueryFileListRequest;
         event ViewEventHandler<string> OnConvertRequest;
         event ViewEventHandler OnUndoRequest;
+        event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
 
         void ClearListView();
         void AddFileVo(FileVo vo);

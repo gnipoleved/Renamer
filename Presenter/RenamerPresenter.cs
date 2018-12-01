@@ -17,6 +17,7 @@ namespace Renamer.Presenter
         void OnViewDirectorySelected(string directory);
         void OnViewFileListQueried(string where);
         void OnViewUndoRequest();
+        void OnViewFlagIncludeFolderChanged(bool flag);
     }
 
 
@@ -46,6 +47,7 @@ namespace Renamer.Presenter
             view.OnQueryFileListRequest += OnViewFileListQueried;
             view.OnConvertRequest += new ViewEventHandler<string>(OnViewConvertRequest);
             view.OnUndoRequest += OnViewUndoRequest;
+            view.OnFlagIncldeFolderChanged += OnViewFlagIncludeFolderChanged;
         }
 
 
@@ -123,6 +125,18 @@ namespace Renamer.Presenter
                     view.ErrorMsg = "더 이상 실행 취소를 할 수 없습니다.";
                 }
             }
+            catch (Exception ex)
+            {
+                view.ErrorMsg = ex.ToString();
+            }
+        }
+
+        public /*override*/ void OnViewFlagIncludeFolderChanged(bool flag)
+        {
+            try
+            {
+                model.IncludeFolder = flag;
+            } 
             catch (Exception ex)
             {
                 view.ErrorMsg = ex.ToString();

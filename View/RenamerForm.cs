@@ -68,6 +68,8 @@ namespace Renamer.View
 
         public /*override*/ event ViewEventHandler OnUndoRequest;
 
+        public /*override*/ event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
+
 
         public /*override*/ void ClearListView()
         {
@@ -206,6 +208,11 @@ namespace Renamer.View
         private void RequestUndo()
         {
             if (OnUndoRequest != null) OnUndoRequest();
+        }
+
+        private void cbx_includeFolder_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OnFlagIncldeFolderChanged != null) OnFlagIncldeFolderChanged(cbx_includeFolder.Checked);
         }
 
 

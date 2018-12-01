@@ -7,11 +7,12 @@ namespace Renamer.Model
 {
     public interface IModel
     {
+        bool IncludeFolder { get; set; }
         DirectoryInfo Directory { get; set; }
         List<FileVo> QueriedFileList { get; set; }
         string Where { get; set; }
         string To { get; set; }
-
+        
         //ConvertResult ConvResult { get; set; }
 
         void Init();
@@ -28,6 +29,7 @@ namespace Renamer.Model
         private Properties props;
         private ConvertAction prevAction;
 
+        public /*override*/ bool IncludeFolder { get; set; }
         public /*override*/ List<FileVo> QueriedFileList { get; set; }
         public /*override*/ DirectoryInfo Directory { get; set; }
         public /*override*/ string Where { get; set; }
