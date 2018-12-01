@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MockupTester\model\RenamerMockupModel.cs" />
     <Compile Include="Model\ConvertAction.cs" />
     <Compile Include="Model\Properties.cs" />
     <Compile Include="Model\RenamerModel.cs" />
