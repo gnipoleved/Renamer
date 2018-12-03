@@ -5,6 +5,7 @@ namespace Renamer.View
 {
     public delegate void ViewEventHandler();
     public delegate void ViewEventHandler<T>(T param);
+    public delegate void ViewEventHandler<T, F, P>(T param1, F param2, P param3);
 
 
     public interface IView
@@ -13,6 +14,9 @@ namespace Renamer.View
         string ErrorMsg { set; }
 
         string Directory { set; }
+        bool IncludeFile { set; }
+        bool IncludeFolder { set; }
+        bool IncludeRootFolder { set; }
 
         void Build();
         event ViewEventHandler OnBuilt;
@@ -20,7 +24,8 @@ namespace Renamer.View
         event ViewEventHandler<string> OnQueryFileListRequest;
         event ViewEventHandler<string> OnConvertRequest;
         event ViewEventHandler OnUndoRequest;
-        event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
+        //event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
+        event ViewEventHandler<bool, bool, bool> OnIncludeOptionsChanged;
 
         void ClearListView();
         void AddVo(BaseVo vo);

@@ -45,7 +45,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.cbx_includeFolder = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbx_includeFile = new System.Windows.Forms.CheckBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.cbx_includeRootFolder = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbx_directory
@@ -180,28 +184,60 @@
             // cbx_includeFolder
             // 
             this.cbx_includeFolder.AutoSize = true;
-            this.cbx_includeFolder.Location = new System.Drawing.Point(6, 8);
+            this.cbx_includeFolder.Location = new System.Drawing.Point(70, 7);
             this.cbx_includeFolder.Name = "cbx_includeFolder";
-            this.cbx_includeFolder.Size = new System.Drawing.Size(76, 16);
+            this.cbx_includeFolder.Size = new System.Drawing.Size(48, 16);
             this.cbx_includeFolder.TabIndex = 8;
-            this.cbx_includeFolder.Text = "폴더 포함";
+            this.cbx_includeFolder.Text = "폴더";
             this.cbx_includeFolder.UseVisualStyleBackColor = true;
             this.cbx_includeFolder.CheckedChanged += new System.EventHandler(this.cbx_includeFolder_CheckedChanged);
             // 
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.cbx_includeFile);
             this.panel1.Controls.Add(this.cbx_includeFolder);
             this.panel1.Location = new System.Drawing.Point(14, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(87, 31);
+            this.panel1.Size = new System.Drawing.Size(125, 31);
             this.panel1.TabIndex = 9;
+            // 
+            // cbx_includeFile
+            // 
+            this.cbx_includeFile.AutoSize = true;
+            this.cbx_includeFile.Location = new System.Drawing.Point(10, 7);
+            this.cbx_includeFile.Name = "cbx_includeFile";
+            this.cbx_includeFile.Size = new System.Drawing.Size(48, 16);
+            this.cbx_includeFile.TabIndex = 9;
+            this.cbx_includeFile.Text = "파일";
+            this.cbx_includeFile.UseVisualStyleBackColor = true;
+            this.cbx_includeFile.CheckedChanged += new System.EventHandler(this.cbx_includeFile_CheckedChanged);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.cbx_includeRootFolder);
+            this.panel2.Location = new System.Drawing.Point(143, 12);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(113, 31);
+            this.panel2.TabIndex = 10;
+            // 
+            // cbx_includeRootFolder
+            // 
+            this.cbx_includeRootFolder.AutoSize = true;
+            this.cbx_includeRootFolder.Location = new System.Drawing.Point(6, 7);
+            this.cbx_includeRootFolder.Name = "cbx_includeRootFolder";
+            this.cbx_includeRootFolder.Size = new System.Drawing.Size(104, 16);
+            this.cbx_includeRootFolder.TabIndex = 0;
+            this.cbx_includeRootFolder.Text = "루트 폴더 포함";
+            this.cbx_includeRootFolder.UseVisualStyleBackColor = true;
+            this.cbx_includeRootFolder.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // RenamerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(630, 498);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btn_undo);
@@ -223,6 +259,8 @@
             this.Load += new System.EventHandler(this.RenamerForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -247,5 +285,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox cbx_includeFolder;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.CheckBox cbx_includeFile;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.CheckBox cbx_includeRootFolder;
     }
 }

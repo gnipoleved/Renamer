@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Renamer.MockupTester.model
 {
-    class RenamerMockupModel : IModel 
+    class RenamerMockupModel //: IModel 
     {
         private bool _includeFolder;
         public bool IncludeFolder

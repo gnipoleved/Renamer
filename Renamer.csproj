@@ -62,11 +62,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="MockupTester\model\RenamerMockupModel.cs" />
     <Compile Include="Model\ConvertAction.cs" />
     <Compile Include="Model\Properties.cs" />
     <Compile Include="Model\RenamerModel.cs" />
     <Compile Include="Model\Vo.cs" />
+    <Compile Include="Presenter\DifferntOptionStateException.cs" />
     <Compile Include="Presenter\RenamerPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

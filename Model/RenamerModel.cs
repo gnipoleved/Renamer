@@ -1,4 +1,5 @@
-﻿using Renamer.Presenter;
+﻿using Renamer.Exceptions;
+using Renamer.Presenter;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,14 +9,20 @@ namespace Renamer.Model
     public interface IModel
     {
         string State { get; set; }
+        /// <summary>
+        /// IncludeFile, IncludeFolder, IncludeRootFolder 각 값을 2진수로 하여 순서대로 자리에 배치한 값으로, 세 option 의 값 상태를 나타낸다. 
+        /// (예를 들어, true, false, true 이면 2진수 101 이 된다)
+        /// 파일 찾기 할때 저장되며, 파일 변환시의 상태와 비교하여 다르면 변환이 진행되지 않도록 한다.
+        /// </summary>
+        short OptionState { get; set; }
+        bool IncludeFile { get; set; }
         bool IncludeFolder { get; set; }
+        bool IncludeRootFolder { get; set; }
         DirectoryInfo Directory { get; set; }
         List<BaseVo> QueriedFileList { get; set; }
         string Where { get; set; }
         string To { get; set; }
         
-        //ConvertResult ConvResult { get; set; }
-
         void Init();
         void SelectDirectory(string directory);
         void QueryFileList(string where, ListAdder adder);
@@ -23,6 +30,7 @@ namespace Renamer.Model
         ActionResult Undo(StatusListen listen);
         bool AbleToConvert();
         bool AbleToUndo();
+        void ClearList();
     }
 
 
@@ -33,28 +41,27 @@ namespace Renamer.Model
 
         public /*override*/ string State { get; set; } 
 
-        private bool _includeFolder;
-        public /*override*/ bool IncludeFolder 
-        {
-            get
-            {
-                return _includeFolder;
-            }
-            set
-            {
-                props.set("last_flagIncludeFolder", string.Format("{0}", value));
-                _includeFolder = value;
-            }
-        }
+        public /*override*/ short OptionState { get; set; }
+
+        public /*override*/ bool IncludeFile { get; set; }
+        public /*override*/ bool IncludeFolder { get; set; }
+        public /*override*/ bool IncludeRootFolder { get; set; }
         public /*override*/ List<BaseVo> QueriedFileList { get; set; }  // 디렉토리도 포함될 수 있음
         public /*override*/ DirectoryInfo Directory { get; set; }
         public /*override*/ string Where { get; set; }
         public /*override*/ string To { get; set; }
 
 
+        public /*override*/ void ClearList()
+        {
+            prevAction = null;
+            QueriedFileList.Clear();
+        }
+
         public RenamerModel()
         {
             props = new Properties("renamer.ini");
+            QueriedFileList = new List<BaseVo>();
         }
 
         void IModel.Init()
@@ -71,20 +78,21 @@ namespace Renamer.Model
                 Directory = new DirectoryInfo(readDir);
             }
 
-            string readFlagIncludeFolder = props.get("last_flagIncludeFolder");
-            if (string.IsNullOrEmpty(readFlagIncludeFolder))
-            {
-                IncludeFolder = false;
-            }
-            else
-            {
-                if (readFlagIncludeFolder == "true") IncludeFolder = true;
-                else IncludeFolder = false;
-            }
+            IncludeFile = true;
+            IncludeFolder = false;
+            IncludeRootFolder = false;
+            //OptionState = (1 << 2) + (0 << 1) + (0);
+            OptionState = getCurrentOptionState();
+        }
+
+        private short getCurrentOptionState()
+        {
+            return (short)((Convert.ToInt16(IncludeFile) << 2) + (Convert.ToInt16(IncludeFolder) << 1) + (Convert.ToInt16(IncludeRootFolder)));
         }
 
         void IModel.SelectDirectory(string directory)
         {
+            prevAction = null;
             DirectoryInfo dir = new DirectoryInfo(directory);
             if (dir.Exists)
             {
@@ -101,45 +109,68 @@ namespace Renamer.Model
 
         public /*override*/ void QueryFileList(string where, ListAdder adder)
         {
+            prevAction = null;
+
             this.Where = where;
 
-            QueriedFileList = new List<BaseVo>();
+            //QueriedFileList = new List<BaseVo>();
+            QueriedFileList.Clear();
             
-            Queue<DirectoryInfo> q = new Queue<DirectoryInfo>();
-            q.Enqueue(Directory);
+            //Queue<DirectoryInfo> q = new Queue<DirectoryInfo>();
+            Queue<QNode> q = new Queue<QNode>();
+            
+            //q.Enqueue(Directory);
+            q.Enqueue(new QNode() { Root = true, DirInfo = Directory });
 
             while (q.Count > 0)
             {
-                DirectoryInfo poll = q.Dequeue();
-                if (poll.Exists)
+                //DirectoryInfo poll = q.Dequeue();
+                QNode poll = q.Dequeue();
+                //if (poll.Exists)
+                if (poll.DirInfo.Exists)
                 {
                     // 폴더 포함 체크가 되어 있는 경우, 해당 디렉토리 먼저 file list 에 담는다. 물론, 경로명에 검색 문자열이 있다면!!
                     if (IncludeFolder)
                     {
-                        if (poll.Name.IndexOf(where) >= 0)
+                        //if (poll.Name.IndexOf(where) >= 0)
+                        if (poll.DirInfo.Name.IndexOf(where) >= 0)
                         {
-                            QueriedFileList.Add(new DirectoryVo(QueriedFileList.Count + 1, poll, Status.STANDBY));
-                            adder(QueriedFileList[QueriedFileList.Count - 1]);
+                            //if (IncludeRootFolder || QueriedFileList.Count > 0)  // IncludeRootFoler 옵션이 true 이거나, 그렇지 않다면 (QueriedFielList 에 값이 없다면 검색을 시작하는 루트 폴더이므로) 루트 풀더는 변경하지 않는다.
+                            if (IncludeRootFolder || !poll.Root)  // IncludeRootFoler 옵션이 true 인 경우, 또는 IncludeRootFolder 옵션이 false 이면 루트 풀더는 변경하지 않는다(root 가 아닌 경우만 add 한다는 말).
+                            {
+                                //QueriedFileList.Add(new DirectoryVo(QueriedFileList.Count + 1, poll, Status.STANDBY));
+                                QueriedFileList.Add(new DirectoryVo(QueriedFileList.Count + 1, poll.DirInfo, Status.STANDBY));
+                                adder(QueriedFileList[QueriedFileList.Count - 1]);
+                            }
                         }
                     }
 
-                    // 위에서 담긴 디렉토리에 있는 파일들이 그 다음에 리스트에 담긴다.
-                    foreach (FileInfo fi in poll.GetFiles())
+                    if (IncludeFile)
                     {
-                        //if (fi.Name.ToUpper().IndexOf(where.ToUpper()) >= 0)
-                        if (fi.Name.IndexOf(where) >= 0)
+                        // 위에서 담긴 디렉토리에 있는 파일들이 그 다음에 리스트에 담긴다.
+                        //foreach (FileInfo fi in poll.GetFiles())
+                        foreach (FileInfo fi in poll.DirInfo.GetFiles())
                         {
-                            QueriedFileList.Add(new FileVo(QueriedFileList.Count + 1, fi, Status.STANDBY));
-                            adder(QueriedFileList[QueriedFileList.Count - 1]);
+                            //if (fi.Name.ToUpper().IndexOf(where.ToUpper()) >= 0)
+                            if (fi.Name.IndexOf(where) >= 0)
+                            {
+                                QueriedFileList.Add(new FileVo(QueriedFileList.Count + 1, fi, Status.STANDBY));
+                                adder(QueriedFileList[QueriedFileList.Count - 1]);
+                            }
                         }
                     }
 
-                    foreach (DirectoryInfo di in poll.GetDirectories())
+                    // Include Option 이 어떻든지 상관 없이 다음 폴더를 queue 에 넣어줘야 한다.
+                    //foreach (DirectoryInfo di in poll.GetDirectories())
+                    foreach (DirectoryInfo di in poll.DirInfo.GetDirectories())
                     {
-                        q.Enqueue(di);
+                        //q.Enqueue(di);
+                        q.Enqueue(new QNode() { Root = false, DirInfo = di });
                     }
                 }
             }
+
+            OptionState = getCurrentOptionState();
 
             State = AppState.QUERY_LIST_DONE;
         }
@@ -147,62 +178,67 @@ namespace Renamer.Model
 
         public /*override*/ ActionResult ConvertFiles(string to, StatusListen listen)
         {
+            prevAction = null;  // throw exception 되면 prevAction 이 남을수도 있기 때문에..
             this.To = to;
             ActionResult convertResult = new ActionResult();
             convertResult.CountTotal = QueriedFileList.Count;
+
+            if (OptionState != getCurrentOptionState()) throw new DifferentOptionState();
 
             ConvertAction convertAction = new ConvertAction(QueriedFileList, IncludeFolder, Where, To);
             prevAction = convertAction;
 
             // As of 2018.12.01 : QueriedFileList 에 이제 폴더도 포함되어 있을 수 있다. 
             // 따라서 변환 작업은 FileVo 먼저 변환을 한다음 폴더는 QueriedFileList 뒤에서 부터 변환 하여야 한다. 
-            // 폴더명 먼저 바꿀 경우 그 안에 파일들은 변환이 안될것임.
-            //foreach (FileVo vo in QueriedFileList)
-            foreach (BaseVo vo in QueriedFileList)
+            // 왜냐하면 폴더명 먼저 바꿀 경우 그 안에 파일들은 변환이 안될것이기 때문임.
+            if (IncludeFile)    // 파일 찾기 할 때는 includeFile true 로 했다가, 변환하기 직전에 false 로 바꿀 수 있음. 이럴 경우 파일은 포함 안하는게 맞음
             {
-                if (vo.TypeOfVo != VoType.FILE) continue;
+                foreach (BaseVo vo in QueriedFileList)
+                {
+                    if (vo.TypeOfVo != VoType.FILE) continue;
 
-                convertVo(vo, listen, ref convertResult);
+                    convertVo(vo, listen, ref convertResult);
 
-                #region old code
-                //bool succ = false;
-                ////if (File.Exists(vo.PathOriginal))
-                //if (vo.ExistsInOriginalPath())
-                //{
-                //    vo.SetPathMoved(this.Where, this.To);
-                //    vo.Status = Status.ON_CONV;
-                //    listen(vo);
-                //    try
-                //    {
-                //        File.Move(vo.PathOriginal, vo.PathMoved);
-                //        succ = true;
-                //    }
-                //    catch
-                //    {
-                //        succ = false;
-                //    }                    
-                //}
-                //else
-                //{
-                //    succ = false;
-                //}
+                    #region old code
+                    //bool succ = false;
+                    ////if (File.Exists(vo.PathOriginal))
+                    //if (vo.ExistsInOriginalPath())
+                    //{
+                    //    vo.SetPathMoved(this.Where, this.To);
+                    //    vo.Status = Status.ON_CONV;
+                    //    listen(vo);
+                    //    try
+                    //    {
+                    //        File.Move(vo.PathOriginal, vo.PathMoved);
+                    //        succ = true;
+                    //    }
+                    //    catch
+                    //    {
+                    //        succ = false;
+                    //    }                    
+                    //}
+                    //else
+                    //{
+                    //    succ = false;
+                    //}
 
-                //if (succ)
-                //{
-                //    vo.Status = Status.CONV_COMPLETE;
-                //    listen(vo);
-                //    ++convertResult.CountSuccess;
-                //}
-                //else
-                //{
-                //    vo.Status = Status.NOT_ABLE_TO_CONV;
-                //    listen(vo);
-                //    ++convertResult.CountFail;
-                //}
-                #endregion
+                    //if (succ)
+                    //{
+                    //    vo.Status = Status.CONV_COMPLETE;
+                    //    listen(vo);
+                    //    ++convertResult.CountSuccess;
+                    //}
+                    //else
+                    //{
+                    //    vo.Status = Status.NOT_ABLE_TO_CONV;
+                    //    listen(vo);
+                    //    ++convertResult.CountFail;
+                    //}
+                    #endregion
+                }
             }
             
-            if (IncludeFolder)  // 디렉토리를 바꿀거라고 처음에 포함시켰다가 폴더 포함 체크 박스 해제하고 변환하기 하는 경우도 있을 수 있으므로 
+            if (IncludeFolder)  // 마찬가지 디렉토리를 바꿀거라고 처음에 파일찾기 시에는 포함시켰다가 폴더 포함 체크 박스 해제하고 변환하기 하는 경우도 있을 수 있으므로 
             {
                 // 디렉토리는 상위 먼저 바꿀 경우 하위 폴더는 나중에 접근이 불가 할 수 있다.
                 // 따라서 하위 부터 변환을 하기 위해 QueriedFileList 의 역순으로
@@ -392,14 +428,14 @@ namespace Renamer.Model
 
         public /*override*/ bool AbleToUndo()
         {
-            return prevAction != null;  // As of 2018.12.01 : 이번 변경으로 prevAction != null 의 의미는 단순히 convert 작업을 한 번 한 적이 있는 지 없는지 여부를 알아 보는 것. 한 번 convert 한적 있고 실행 취소 한 경우 다시 실행 취소 안된다.
+            // As of 2018.12.01 : 이번 변경으로 prevAction != null 의 의미는 단순히 convert 작업을 한 번 한 적이 있는 지 없는지 여부를 알아 보는 것. 한 번 convert 한적 있고 실행 취소 한 경우 다시 실행 취소 안된다.
+            return prevAction != null;
         }
 
         public /*override*/ bool AbleToConvert()
         {
             return State == AppState.QUERY_LIST_DONE;
         }
-
 
     }
 }

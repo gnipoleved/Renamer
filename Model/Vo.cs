@@ -31,6 +31,13 @@ namespace Renamer.Model
     }
 
 
+    public class QNode
+    {
+        public bool Root { get; set; }
+        public DirectoryInfo DirInfo { get; set; }
+    }
+
+
     public abstract class BaseVo
     {
         public int Index { get; set; }

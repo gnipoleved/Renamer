@@ -46,6 +46,30 @@ namespace Renamer.View
             }
         }
 
+        public /*override*/  bool IncludeFile 
+        {
+            set
+            {
+                cbx_includeFile.Checked = value;
+            }
+        }
+
+        public /*override*/ bool IncludeFolder
+        {
+            set
+            {
+                cbx_includeFolder.Checked = value;
+            }
+        }
+
+        public /*override*/ bool IncludeRootFolder
+        {
+            set
+            {
+                cbx_includeRootFolder.Checked = value;
+            }
+        }
+
 
         void IView.Build()
         {
@@ -68,7 +92,8 @@ namespace Renamer.View
 
         public /*override*/ event ViewEventHandler OnUndoRequest;
 
-        public /*override*/ event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
+        //public /*override*/ event ViewEventHandler<bool> OnFlagIncldeFolderChanged;
+        public /*override*/ event ViewEventHandler<bool, bool, bool> OnIncludeOptionsChanged;
 
 
         public /*override*/ void ClearListView()
@@ -184,7 +209,7 @@ namespace Renamer.View
         {
             if (OnDirectorySelected != null)
             {
-                ClearListView();
+                //ClearListView();
                 OnDirectorySelected(dirPath);
             }
         }
@@ -217,9 +242,29 @@ namespace Renamer.View
 
         private void cbx_includeFolder_CheckedChanged(object sender, EventArgs e)
         {
-            if (OnFlagIncldeFolderChanged != null) OnFlagIncldeFolderChanged(cbx_includeFolder.Checked);
+            //if (OnFlagIncldeFolderChanged != null) OnFlagIncldeFolderChanged(cbx_includeFolder.Checked);
+            //if (!cbx_includeFile.Checked && !cbx_includeFolder.Checked) cbx_includeFile.Checked = true;
+
+            DoOnIncludeOptionsChagned();
         }
 
+        private void cbx_includeFile_CheckedChanged(object sender, EventArgs e)
+        {
+            //if (!cbx_includeFolder.Checked && !cbx_includeFile.Checked) cbx_includeFolder.Checked = true;
+
+            DoOnIncludeOptionsChagned();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            DoOnIncludeOptionsChagned();
+        }
+
+
+        private void DoOnIncludeOptionsChagned()
+        {
+            if (OnIncludeOptionsChanged != null) OnIncludeOptionsChanged(cbx_includeFile.Checked, cbx_includeFolder.Checked, cbx_includeRootFolder.Checked);
+        }
 
     }
 }
